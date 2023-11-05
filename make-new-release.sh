@@ -3,11 +3,11 @@
 set -euo pipefail
 
 get_next_version_number() {
-	DATEPART=$(date +%y.%-m)
+	DATE_PART=$(date +%y.%-m)
 	ITERATION=0
 
 	while true; do
-		VERSION_STRING="${DATEPART}.${ITERATION}"
+		VERSION_STRING="${DATE_PART}.${ITERATION}"
 		if git rev-list "v$VERSION_STRING" > /dev/null 2>&1; then
 			((ITERATION++))
 		else
@@ -33,5 +33,5 @@ git tag "v${VERSION}" --force
 
 printf "\n\nSuccessfully created release %s\n" "v${VERSION}"
 printf "\nYou'll probably want to continue with:\n"
-printf "\tgit push origin main\n"
-printf "\tgit push origin %s\n" "v${VERSION}"
+printf "%s> git push origin main\n" "\t"
+printf "%s> git push origin %s\n" "\t" "v${VERSION}"
