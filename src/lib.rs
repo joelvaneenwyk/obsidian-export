@@ -693,7 +693,7 @@ impl<'a> Exporter<'a> {
             link.push_str(&slugify(section));
         }
 
-        let link_tag = pulldown_cmark::Tag::Link(
+        let link_tag = Tag::Link(
             pulldown_cmark::LinkType::Inline,
             CowStr::from(link),
             CowStr::from(""),
@@ -754,7 +754,7 @@ fn create_file(dest: &Path) -> Result<File> {
         .or_else(|err| {
             if err.kind() == ErrorKind::NotFound {
                 let parent = dest.parent().expect("file should have a parent directory");
-                std::fs::create_dir_all(parent)?
+                fs::create_dir_all(parent)?
             }
             File::create(dest)
         })
@@ -763,13 +763,13 @@ fn create_file(dest: &Path) -> Result<File> {
 }
 
 fn copy_file(src: &Path, dest: &Path) -> Result<()> {
-    std::fs::copy(src, dest)
+    fs::copy(src, dest)
         .or_else(|err| {
             if err.kind() == ErrorKind::NotFound {
                 let parent = dest.parent().expect("file should have a parent directory");
-                std::fs::create_dir_all(parent)?
+                fs::create_dir_all(parent)?
             }
-            std::fs::copy(src, dest)
+            fs::copy(src, dest)
         })
         .context(WriteSnafu { path: dest })?;
     Ok(())

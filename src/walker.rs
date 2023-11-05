@@ -27,7 +27,7 @@ pub struct WalkOptions<'a> {
     /// An optional custom filter function which is called for each directory entry to determine if
     /// it should be included or not.
     ///
-    /// This is passed to [`ignore::WalkBuilder::filter_entry`].
+    /// This is passed to [`WalkBuilder::filter_entry`].
     pub filter_fn: Option<&'static FilterFn>,
 }
 

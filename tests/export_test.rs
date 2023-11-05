@@ -1,7 +1,7 @@
 use obsidian_export::{ExportError, Exporter, FrontmatterStrategy};
 use pretty_assertions::assert_eq;
-use std::fs::{create_dir, read_to_string, set_permissions, File, Permissions};
-use std::io::prelude::*;
+use std::fs::read_to_string;
+
 use std::path::PathBuf;
 use tempfile::TempDir;
 use walkdir::WalkDir;
@@ -37,7 +37,7 @@ fn test_main_variants_with_default_options() {
                 entry.path().display()
             )
         });
-        let actual = read_to_string(tmp_dir.path().clone().join(PathBuf::from(&filename)))
+        let actual = read_to_string(tmp_dir.path().join(PathBuf::from(&filename)))
             .unwrap_or_else(|_| panic!("failed to read {} from temporary exportdir", filename));
 
         assert_eq!(
@@ -62,7 +62,6 @@ fn test_frontmatter_never() {
     let actual = read_to_string(
         tmp_dir
             .path()
-            .clone()
             .join(PathBuf::from("note-with-frontmatter.md")),
     )
     .unwrap();
@@ -85,7 +84,6 @@ fn test_frontmatter_always() {
     let actual = read_to_string(
         tmp_dir
             .path()
-            .clone()
             .join(PathBuf::from("note-without-frontmatter.md")),
     )
     .unwrap();
@@ -96,7 +94,6 @@ fn test_frontmatter_always() {
     let actual = read_to_string(
         tmp_dir
             .path()
-            .clone()
             .join(PathBuf::from("note-with-frontmatter.md")),
     )
     .unwrap();
@@ -116,7 +113,6 @@ fn test_exclude() {
 
     let excluded_note = tmp_dir
         .path()
-        .clone()
         .join(PathBuf::from("excluded-note.md"));
     assert!(
         !excluded_note.exists(),
@@ -135,15 +131,15 @@ fn test_single_file_to_dir() {
     .unwrap();
 
     assert_eq!(
-        read_to_string(tmp_dir.path().clone().join(PathBuf::from("note.md"))).unwrap(),
         read_to_string("tests/test_data/expected/single-file/note.md").unwrap(),
+        read_to_string(tmp_dir.path().join(PathBuf::from("note.md"))).unwrap(),
     );
 }
 
 #[test]
 fn test_single_file_to_file() {
     let tmp_dir = TempDir::new().expect("failed to make tempdir");
-    let dest = tmp_dir.path().clone().join(PathBuf::from("export.md"));
+    let dest = tmp_dir.path().join(PathBuf::from("export.md"));
 
     Exporter::new(
         PathBuf::from("tests/test_data/input/single-file/note.md"),
@@ -204,14 +200,14 @@ fn test_start_at_file_within_subdir_destination_is_dir() {
 
     assert_eq!(
         expected,
-        read_to_string(tmp_dir.path().clone().join(PathBuf::from("Note B.md"))).unwrap(),
+        read_to_string(tmp_dir.path().join(PathBuf::from("Note B.md"))).unwrap(),
     );
 }
 
 #[test]
 fn test_start_at_file_within_subdir_destination_is_file() {
     let tmp_dir = TempDir::new().expect("failed to make tempdir");
-    let dest = tmp_dir.path().clone().join(PathBuf::from("note.md"));
+    let dest = tmp_dir.path().join(PathBuf::from("note.md"));
     let mut exporter = Exporter::new(
         PathBuf::from("tests/test_data/input/start-at/"),
         dest.clone(),
@@ -359,8 +355,8 @@ fn test_no_recursive_embeds() {
     exporter.run().expect("exporter returned error");
 
     assert_eq!(
-        read_to_string(tmp_dir.path().clone().join(PathBuf::from("Note A.md"))).unwrap(),
         read_to_string("tests/test_data/expected/infinite-recursion/Note A.md").unwrap(),
+        read_to_string(tmp_dir.path().join(PathBuf::from("Note A.md"))).unwrap(),
     );
 }
 
@@ -392,7 +388,7 @@ fn test_non_ascii_filenames() {
                 entry.path().display()
             )
         });
-        let actual = read_to_string(tmp_dir.path().clone().join(PathBuf::from(&filename)))
+        let actual = read_to_string(tmp_dir.path().join(PathBuf::from(&filename)))
             .unwrap_or_else(|_| panic!("failed to read {} from temporary exportdir", filename));
 
         assert_eq!(
