@@ -81,7 +81,7 @@ pub type MarkdownEvents<'a> = Vec<Event<'a>>;
 /// # use tempfile::TempDir;
 ///
 /// # let tmp_dir = TempDir::new().expect("failed to make tempdir");
-/// # let source = PathBuf::from("tests/testdata/input/postprocessors");
+/// # let source = PathBuf::from("tests/test_data/input/postprocessors");
 /// # let destination = tmp_dir.path().to_path_buf();
 /// let mut exporter = Exporter::new(source, destination);
 ///
@@ -126,7 +126,7 @@ pub type MarkdownEvents<'a> = Vec<Event<'a>>;
 /// }
 ///
 /// # let tmp_dir = TempDir::new().expect("failed to make tempdir");
-/// # let source = PathBuf::from("tests/testdata/input/postprocessors");
+/// # let source = PathBuf::from("tests/test_data/input/postprocessors");
 /// # let destination = tmp_dir.path().to_path_buf();
 /// # let mut exporter = Exporter::new(source, destination);
 /// exporter.add_postprocessor(&foo_to_bar);

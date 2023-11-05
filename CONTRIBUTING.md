@@ -52,7 +52,7 @@ I don't insist on this, but pull requests which fail to adhere to these conventi
 In order to have confidence that your changes work as intended, as well as to avoid regressions when making changes in the future, I would like to see code accompanied by test cases.
 
 At the moment, the test framework primary relies on high-level integration tests, all of which are defined in the [tests](tests/) directory.
-These rely on comparing Markdown notes [before](tests/testdata/input) and [after](tests/testdata/expected) running an export.
+These rely on comparing Markdown notes [before](tests/test_data/input) and [after](tests/test_data/expected) running an export.
 By studying some of the existing tests, you should be able to copy and adapt these for your own changes.
 
 For an example of doing low-level unit tests, you can look at the end of [frontmatter.rs](src/frontmatter.rs).

@@ -35,7 +35,7 @@ fn append_frontmatter(ctx: &mut Context, _events: &mut MarkdownEvents) -> Postpr
 fn test_postprocessors() {
     let tmp_dir = TempDir::new().expect("failed to make tempdir");
     let mut exporter = Exporter::new(
-        PathBuf::from("tests/testdata/input/postprocessors"),
+        PathBuf::from("tests/test_data/input/postprocessors"),
         tmp_dir.path().to_path_buf(),
     );
     exporter.add_postprocessor(&foo_to_bar);
@@ -43,8 +43,8 @@ fn test_postprocessors() {
 
     exporter.run().unwrap();
 
-    let expected = read_to_string("tests/testdata/expected/postprocessors/Note.md").unwrap();
     let actual = read_to_string(tmp_dir.path().clone().join(PathBuf::from("Note.md"))).unwrap();
+    let expected = read_to_string("tests/test_data/expected/postprocessors/Note.md").unwrap();
     assert_eq!(expected, actual);
 }
 
@@ -52,7 +52,7 @@ fn test_postprocessors() {
 fn test_postprocessor_stophere() {
     let tmp_dir = TempDir::new().expect("failed to make tempdir");
     let mut exporter = Exporter::new(
-        PathBuf::from("tests/testdata/input/postprocessors"),
+        PathBuf::from("tests/test_data/input/postprocessors"),
         tmp_dir.path().to_path_buf(),
     );
 
@@ -69,7 +69,7 @@ fn test_postprocessor_stop_and_skip() {
     let note_path = tmp_dir.path().clone().join(PathBuf::from("Note.md"));
 
     let mut exporter = Exporter::new(
-        PathBuf::from("tests/testdata/input/postprocessors"),
+        PathBuf::from("tests/test_data/input/postprocessors"),
         tmp_dir.path().to_path_buf(),
     );
     exporter.run().unwrap();
@@ -88,7 +88,7 @@ fn test_postprocessor_change_destination() {
     let tmp_dir = TempDir::new().expect("failed to make tempdir");
     let original_note_path = tmp_dir.path().clone().join(PathBuf::from("Note.md"));
     let mut exporter = Exporter::new(
-        PathBuf::from("tests/testdata/input/postprocessors"),
+        PathBuf::from("tests/test_data/input/postprocessors"),
         tmp_dir.path().to_path_buf(),
     );
     exporter.run().unwrap();
@@ -115,7 +115,7 @@ fn test_postprocessor_change_destination() {
 fn test_postprocessor_stateful_callback() {
     let tmp_dir = TempDir::new().expect("failed to make tempdir");
     let mut exporter = Exporter::new(
-        PathBuf::from("tests/testdata/input/postprocessors"),
+        PathBuf::from("tests/test_data/input/postprocessors"),
         tmp_dir.path().to_path_buf(),
     );
 
@@ -146,7 +146,7 @@ fn test_postprocessor_stateful_callback() {
 fn test_embed_postprocessors() {
     let tmp_dir = TempDir::new().expect("failed to make tempdir");
     let mut exporter = Exporter::new(
-        PathBuf::from("tests/testdata/input/postprocessors"),
+        PathBuf::from("tests/test_data/input/postprocessors"),
         tmp_dir.path().to_path_buf(),
     );
     exporter.add_embed_postprocessor(&foo_to_bar);
@@ -156,7 +156,7 @@ fn test_embed_postprocessors() {
     exporter.run().unwrap();
 
     let expected =
-        read_to_string("tests/testdata/expected/postprocessors/Note_embed_postprocess_only.md")
+        read_to_string("tests/test_data/expected/postprocessors/Note_embed_postprocess_only.md")
             .unwrap();
     let actual = read_to_string(tmp_dir.path().clone().join(PathBuf::from("Note.md"))).unwrap();
     assert_eq!(expected, actual);
@@ -168,7 +168,7 @@ fn test_embed_postprocessors() {
 fn test_embed_postprocessors_stop_and_skip() {
     let tmp_dir = TempDir::new().expect("failed to make tempdir");
     let mut exporter = Exporter::new(
-        PathBuf::from("tests/testdata/input/postprocessors"),
+        PathBuf::from("tests/test_data/input/postprocessors"),
         tmp_dir.path().to_path_buf(),
     );
     exporter.add_embed_postprocessor(&|_ctx, _mdevents| PostprocessorResult::StopAndSkipNote);
@@ -176,7 +176,7 @@ fn test_embed_postprocessors_stop_and_skip() {
     exporter.run().unwrap();
 
     let expected =
-        read_to_string("tests/testdata/expected/postprocessors/Note_embed_stop_and_skip.md")
+        read_to_string("tests/test_data/expected/postprocessors/Note_embed_stop_and_skip.md")
             .unwrap();
     let actual = read_to_string(tmp_dir.path().clone().join(PathBuf::from("Note.md"))).unwrap();
     assert_eq!(expected, actual);
@@ -189,7 +189,7 @@ fn test_embed_postprocessors_stop_and_skip() {
 fn test_embed_postprocessors_context() {
     let tmp_dir = TempDir::new().expect("failed to make tempdir");
     let mut exporter = Exporter::new(
-        PathBuf::from("tests/testdata/input/postprocessors"),
+        PathBuf::from("tests/test_data/input/postprocessors"),
         tmp_dir.path().to_path_buf(),
     );
 
@@ -236,14 +236,14 @@ fn test_embed_postprocessors_context() {
 fn test_softbreaks_to_hardbreaks() {
     let tmp_dir = TempDir::new().expect("failed to make tempdir");
     let mut exporter = Exporter::new(
-        PathBuf::from("tests/testdata/input/postprocessors"),
+        PathBuf::from("tests/test_data/input/postprocessors"),
         tmp_dir.path().to_path_buf(),
     );
     exporter.add_postprocessor(&softbreaks_to_hardbreaks);
     exporter.run().unwrap();
 
     let expected =
-        read_to_string("tests/testdata/expected/postprocessors/hard_linebreaks.md").unwrap();
+        read_to_string("tests/test_data/expected/postprocessors/hard_linebreaks.md").unwrap();
     let actual = read_to_string(
         tmp_dir
             .path()

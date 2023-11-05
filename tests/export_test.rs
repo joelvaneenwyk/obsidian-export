@@ -14,13 +14,13 @@ fn test_main_variants_with_default_options() {
     let tmp_dir = TempDir::new().expect("failed to make tempdir");
 
     Exporter::new(
-        PathBuf::from("tests/testdata/input/main-samples/"),
+        PathBuf::from("tests/test_data/input/main-samples/"),
         tmp_dir.path().to_path_buf(),
     )
     .run()
     .expect("exporter returned error");
 
-    let walker = WalkDir::new("tests/testdata/expected/main-samples/")
+    let walker = WalkDir::new("tests/test_data/expected/main-samples/")
         // Without sorting here, different test runs may trigger the first assertion failure in
         // unpredictable order.
         .sort_by(|a, b| a.file_name().cmp(b.file_name()))
@@ -33,7 +33,7 @@ fn test_main_variants_with_default_options() {
         let filename = entry.file_name().to_string_lossy().into_owned();
         let expected = read_to_string(entry.path()).unwrap_or_else(|_| {
             panic!(
-                "failed to read {} from testdata/expected/main-samples/",
+                "failed to read {} from test_data/expected/main-samples/",
                 entry.path().display()
             )
         });
@@ -52,7 +52,7 @@ fn test_main_variants_with_default_options() {
 fn test_frontmatter_never() {
     let tmp_dir = TempDir::new().expect("failed to make tempdir");
     let mut exporter = Exporter::new(
-        PathBuf::from("tests/testdata/input/main-samples/"),
+        PathBuf::from("tests/test_data/input/main-samples/"),
         tmp_dir.path().to_path_buf(),
     );
     exporter.frontmatter_strategy(FrontmatterStrategy::Never);
@@ -74,7 +74,7 @@ fn test_frontmatter_never() {
 fn test_frontmatter_always() {
     let tmp_dir = TempDir::new().expect("failed to make tempdir");
     let mut exporter = Exporter::new(
-        PathBuf::from("tests/testdata/input/main-samples/"),
+        PathBuf::from("tests/test_data/input/main-samples/"),
         tmp_dir.path().to_path_buf(),
     );
     exporter.frontmatter_strategy(FrontmatterStrategy::Always);
@@ -108,7 +108,7 @@ fn test_exclude() {
     let tmp_dir = TempDir::new().expect("failed to make tempdir");
 
     Exporter::new(
-        PathBuf::from("tests/testdata/input/main-samples/"),
+        PathBuf::from("tests/test_data/input/main-samples/"),
         tmp_dir.path().to_path_buf(),
     )
     .run()
@@ -128,15 +128,15 @@ fn test_exclude() {
 fn test_single_file_to_dir() {
     let tmp_dir = TempDir::new().expect("failed to make tempdir");
     Exporter::new(
-        PathBuf::from("tests/testdata/input/single-file/note.md"),
+        PathBuf::from("tests/test_data/input/single-file/note.md"),
         tmp_dir.path().to_path_buf(),
     )
     .run()
     .unwrap();
 
     assert_eq!(
-        read_to_string("tests/testdata/expected/single-file/note.md").unwrap(),
         read_to_string(tmp_dir.path().clone().join(PathBuf::from("note.md"))).unwrap(),
+        read_to_string("tests/test_data/expected/single-file/note.md").unwrap(),
     );
 }
 
@@ -146,14 +146,14 @@ fn test_single_file_to_file() {
     let dest = tmp_dir.path().clone().join(PathBuf::from("export.md"));
 
     Exporter::new(
-        PathBuf::from("tests/testdata/input/single-file/note.md"),
+        PathBuf::from("tests/test_data/input/single-file/note.md"),
         dest.clone(),
     )
     .run()
     .unwrap();
 
     assert_eq!(
-        read_to_string("tests/testdata/expected/single-file/note.md").unwrap(),
+        read_to_string("tests/test_data/expected/single-file/note.md").unwrap(),
         read_to_string(&dest).unwrap(),
     );
 }
@@ -162,23 +162,23 @@ fn test_single_file_to_file() {
 fn test_start_at_subdir() {
     let tmp_dir = TempDir::new().expect("failed to make tempdir");
     let mut exporter = Exporter::new(
-        PathBuf::from("tests/testdata/input/start-at/"),
+        PathBuf::from("tests/test_data/input/start-at/"),
         tmp_dir.path().to_path_buf(),
     );
-    exporter.start_at(PathBuf::from("tests/testdata/input/start-at/subdir"));
+    exporter.start_at(PathBuf::from("tests/test_data/input/start-at/subdir"));
     exporter.run().unwrap();
 
     let expected = if cfg!(windows) {
-        read_to_string("tests/testdata/expected/start-at/subdir/Note B.md")
+        read_to_string("tests/test_data/expected/start-at/subdir/Note B.md")
             .unwrap()
             .replace('/', "\\")
     } else {
-        read_to_string("tests/testdata/expected/start-at/subdir/Note B.md").unwrap()
+        read_to_string("tests/test_data/expected/start-at/subdir/Note B.md").unwrap()
     };
 
     assert_eq!(
         expected,
-        read_to_string(tmp_dir.path().clone().join(PathBuf::from("Note B.md"))).unwrap(),
+        read_to_string(tmp_dir.path().join(PathBuf::from("Note B.md"))).unwrap(),
     );
 }
 
@@ -186,20 +186,20 @@ fn test_start_at_subdir() {
 fn test_start_at_file_within_subdir_destination_is_dir() {
     let tmp_dir = TempDir::new().expect("failed to make tempdir");
     let mut exporter = Exporter::new(
-        PathBuf::from("tests/testdata/input/start-at/"),
+        PathBuf::from("tests/test_data/input/start-at/"),
         tmp_dir.path().to_path_buf(),
     );
     exporter.start_at(PathBuf::from(
-        "tests/testdata/input/start-at/subdir/Note B.md",
+        "tests/test_data/input/start-at/subdir/Note B.md",
     ));
     exporter.run().unwrap();
 
     let expected = if cfg!(windows) {
-        read_to_string("tests/testdata/expected/start-at/single-file/Note B.md")
+        read_to_string("tests/test_data/expected/start-at/single-file/Note B.md")
             .unwrap()
             .replace('/', "\\")
     } else {
-        read_to_string("tests/testdata/expected/start-at/single-file/Note B.md").unwrap()
+        read_to_string("tests/test_data/expected/start-at/single-file/Note B.md").unwrap()
     };
 
     assert_eq!(
@@ -213,20 +213,20 @@ fn test_start_at_file_within_subdir_destination_is_file() {
     let tmp_dir = TempDir::new().expect("failed to make tempdir");
     let dest = tmp_dir.path().clone().join(PathBuf::from("note.md"));
     let mut exporter = Exporter::new(
-        PathBuf::from("tests/testdata/input/start-at/"),
+        PathBuf::from("tests/test_data/input/start-at/"),
         dest.clone(),
     );
     exporter.start_at(PathBuf::from(
-        "tests/testdata/input/start-at/subdir/Note B.md",
+        "tests/test_data/input/start-at/subdir/Note B.md",
     ));
     exporter.run().unwrap();
 
     let expected = if cfg!(windows) {
-        read_to_string("tests/testdata/expected/start-at/single-file/Note B.md")
+        read_to_string("tests/test_data/expected/start-at/single-file/Note B.md")
             .unwrap()
             .replace('/', "\\")
     } else {
-        read_to_string("tests/testdata/expected/start-at/single-file/Note B.md").unwrap()
+        read_to_string("tests/test_data/expected/start-at/single-file/Note B.md").unwrap()
     };
     assert_eq!(expected, read_to_string(dest).unwrap(),);
 }
@@ -236,7 +236,7 @@ fn test_not_existing_source() {
     let tmp_dir = TempDir::new().expect("failed to make tempdir");
 
     let err = Exporter::new(
-        PathBuf::from("tests/testdata/no-such-file.md"),
+        PathBuf::from("tests/test_data/no-such-file.md"),
         tmp_dir.path().to_path_buf(),
     )
     .run()
@@ -253,7 +253,7 @@ fn test_not_existing_destination_with_source_dir() {
     let tmp_dir = TempDir::new().expect("failed to make tempdir");
 
     let err = Exporter::new(
-        PathBuf::from("tests/testdata/input/main-samples/"),
+        PathBuf::from("tests/test_data/input/main-samples/"),
         tmp_dir.path().to_path_buf().join("does-not-exist"),
     )
     .run()
@@ -273,7 +273,7 @@ fn test_not_existing_destination_with_source_file() {
     let tmp_dir = TempDir::new().expect("failed to make tempdir");
 
     let err = Exporter::new(
-        PathBuf::from("tests/testdata/input/main-samples/obsidian-wikilinks.md"),
+        PathBuf::from("tests/test_data/input/main-samples/obsidian-wikilinks.md"),
         tmp_dir.path().to_path_buf().join("subdir/does-not-exist"),
     )
     .run()
@@ -332,7 +332,7 @@ fn test_infinite_recursion() {
     let tmp_dir = TempDir::new().expect("failed to make tempdir");
 
     let err = Exporter::new(
-        PathBuf::from("tests/testdata/input/infinite-recursion/"),
+        PathBuf::from("tests/test_data/input/infinite-recursion/"),
         tmp_dir.path().to_path_buf(),
     )
     .run()
@@ -352,15 +352,15 @@ fn test_no_recursive_embeds() {
     let tmp_dir = TempDir::new().expect("failed to make tempdir");
 
     let mut exporter = Exporter::new(
-        PathBuf::from("tests/testdata/input/infinite-recursion/"),
+        PathBuf::from("tests/test_data/input/infinite-recursion/"),
         tmp_dir.path().to_path_buf(),
     );
     exporter.process_embeds_recursively(false);
     exporter.run().expect("exporter returned error");
 
     assert_eq!(
-        read_to_string("tests/testdata/expected/infinite-recursion/Note A.md").unwrap(),
         read_to_string(tmp_dir.path().clone().join(PathBuf::from("Note A.md"))).unwrap(),
+        read_to_string("tests/test_data/expected/infinite-recursion/Note A.md").unwrap(),
     );
 }
 
@@ -369,13 +369,13 @@ fn test_non_ascii_filenames() {
     let tmp_dir = TempDir::new().expect("failed to make tempdir");
 
     Exporter::new(
-        PathBuf::from("tests/testdata/input/non-ascii/"),
+        PathBuf::from("tests/test_data/input/non-ascii/"),
         tmp_dir.path().to_path_buf(),
     )
     .run()
     .expect("exporter returned error");
 
-    let walker = WalkDir::new("tests/testdata/expected/non-ascii/")
+    let walker = WalkDir::new("tests/test_data/expected/non-ascii/")
         // Without sorting here, different test runs may trigger the first assertion failure in
         // unpredictable order.
         .sort_by(|a, b| a.file_name().cmp(b.file_name()))
@@ -388,7 +388,7 @@ fn test_non_ascii_filenames() {
         let filename = entry.file_name().to_string_lossy().into_owned();
         let expected = read_to_string(entry.path()).unwrap_or_else(|_| {
             panic!(
-                "failed to read {} from testdata/expected/non-ascii/",
+                "failed to read {} from test_data/expected/non-ascii/",
                 entry.path().display()
             )
         });
@@ -407,21 +407,21 @@ fn test_non_ascii_filenames() {
 fn test_same_filename_different_directories() {
     let tmp_dir = TempDir::new().expect("failed to make tempdir");
     Exporter::new(
-        PathBuf::from("tests/testdata/input/same-filename-different-directories"),
+        PathBuf::from("tests/test_data/input/same-filename-different-directories"),
         tmp_dir.path().to_path_buf(),
     )
     .run()
     .unwrap();
 
     let expected = if cfg!(windows) {
-        read_to_string("tests/testdata/expected/same-filename-different-directories/Note.md")
+        read_to_string("tests/test_data/expected/same-filename-different-directories/Note.md")
             .unwrap()
             .replace('/', "\\")
     } else {
-        read_to_string("tests/testdata/expected/same-filename-different-directories/Note.md")
+        read_to_string("tests/test_data/expected/same-filename-different-directories/Note.md")
             .unwrap()
     };
 
-    let actual = read_to_string(tmp_dir.path().clone().join(PathBuf::from("Note.md"))).unwrap();
+    let actual = read_to_string(tmp_dir.path().join(PathBuf::from("Note.md"))).unwrap();
     assert_eq!(expected, actual);
 }
