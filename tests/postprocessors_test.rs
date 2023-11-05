@@ -1,13 +1,15 @@
-use obsidian_export::postprocessors::softbreaks_to_hardbreaks;
-use obsidian_export::{Context, Exporter, MarkdownEvents, PostprocessorResult};
-use pretty_assertions::assert_eq;
-use pulldown_cmark::{CowStr, Event};
-use serde_yaml::Value;
 use std::collections::HashSet;
 use std::fs::{read_to_string, remove_file};
 use std::path::PathBuf;
 use std::sync::Mutex;
+
+use pretty_assertions::assert_eq;
+use pulldown_cmark::{CowStr, Event};
+use serde_yaml::Value;
 use tempfile::TempDir;
+
+use obsidian_export::{Context, Exporter, MarkdownEvents, PostprocessorResult};
+use obsidian_export::postprocessors::softbreaks_to_hardbreaks;
 
 /// This postprocessor replaces any instance of "foo" with "bar" in the note body.
 fn foo_to_bar(_ctx: &mut Context, events: &mut MarkdownEvents) -> PostprocessorResult {
@@ -244,11 +246,6 @@ fn test_softbreaks_to_hardbreaks() {
 
     let expected =
         read_to_string("tests/test_data/expected/postprocessors/hard_linebreaks.md").unwrap();
-    let actual = read_to_string(
-        tmp_dir
-            .path()
-            .join(PathBuf::from("hard_linebreaks.md")),
-    )
-    .unwrap();
+    let actual = read_to_string(tmp_dir.path().join(PathBuf::from("hard_linebreaks.md"))).unwrap();
     assert_eq!(expected, actual);
 }

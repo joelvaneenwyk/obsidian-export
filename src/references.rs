@@ -1,5 +1,6 @@
-use regex::Regex;
 use std::fmt;
+
+use regex::Regex;
 
 lazy_static! {
     static ref OBSIDIAN_NOTE_LINK_RE: Regex =
@@ -162,7 +163,7 @@ mod tests {
                 label: None,
                 section: None,
             }
-            .display()
+                .display()
         );
         assert_eq!(
             "Note > Heading",
@@ -171,7 +172,7 @@ mod tests {
                 label: None,
                 section: Some("Heading"),
             }
-            .display()
+                .display()
         );
         assert_eq!(
             "Heading",
@@ -180,7 +181,7 @@ mod tests {
                 label: None,
                 section: Some("Heading"),
             }
-            .display()
+                .display()
         );
         assert_eq!(
             "Label",
@@ -189,7 +190,7 @@ mod tests {
                 label: Some("Label"),
                 section: Some("Heading"),
             }
-            .display()
+                .display()
         );
         assert_eq!(
             "Label",
@@ -198,7 +199,7 @@ mod tests {
                 label: Some("Label"),
                 section: Some("Heading"),
             }
-            .display()
+                .display()
         );
     }
 }

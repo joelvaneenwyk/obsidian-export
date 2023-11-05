@@ -1,8 +1,10 @@
+use std::{env, path::PathBuf};
+
 use eyre::{eyre, Result};
 use gumdrop::Options;
+
+use obsidian_export::{Exporter, ExportError, FrontmatterStrategy, WalkOptions};
 use obsidian_export::postprocessors::softbreaks_to_hardbreaks;
-use obsidian_export::{ExportError, Exporter, FrontmatterStrategy, WalkOptions};
-use std::{env, path::PathBuf};
 
 const VERSION: &str = env!("CARGO_PKG_VERSION");
 
@@ -24,18 +26,18 @@ struct Opts {
     start_at: Option<PathBuf>,
 
     #[options(
-        help = "Frontmatter strategy (one of: always, never, auto)",
-        no_short,
-        long = "frontmatter",
-        parse(try_from_str = "frontmatter_strategy_from_str"),
-        default = "auto"
+    help = "Frontmatter strategy (one of: always, never, auto)",
+    no_short,
+    long = "frontmatter",
+    parse(try_from_str = "frontmatter_strategy_from_str"),
+    default = "auto"
     )]
     frontmatter_strategy: FrontmatterStrategy,
 
     #[options(
-        no_short,
-        help = "Read ignore patterns from files with this name",
-        default = ".export-ignore"
+    no_short,
+    help = "Read ignore patterns from files with this name",
+    default = ".export-ignore"
     )]
     ignore_file: String,
 
@@ -49,9 +51,9 @@ struct Opts {
     no_recursive_embeds: bool,
 
     #[options(
-        no_short,
-        help = "Convert soft line breaks to hard line breaks. This mimics Obsidian's 'Strict line breaks' setting",
-        default = "false"
+    no_short,
+    help = "Convert soft line breaks to hard line breaks. This mimics Obsidian's 'Strict line breaks' setting",
+    default = "false"
     )]
     hard_linebreaks: bool,
 }

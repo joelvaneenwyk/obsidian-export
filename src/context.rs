@@ -1,5 +1,6 @@
-use crate::Frontmatter;
 use std::path::{Path, PathBuf};
+
+use crate::Frontmatter;
 
 #[derive(Debug, Clone)]
 /// Context holds metadata about a note which is being parsed.

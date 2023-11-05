@@ -1,36 +1,36 @@
+#[macro_use]
+extern crate lazy_static;
 pub extern crate pulldown_cmark;
 pub extern crate serde_yaml;
 
-#[macro_use]
-extern crate lazy_static;
+use std::ffi::OsString;
+use std::fmt;
+use std::fs::{self, File};
+use std::io::ErrorKind;
+use std::io::prelude::*;
+use std::path::{Path, PathBuf};
+use std::str;
+
+use pathdiff::diff_paths;
+use percent_encoding::{AsciiSet, CONTROLS, utf8_percent_encode};
+use pulldown_cmark::{CodeBlockKind, CowStr, Event, HeadingLevel, Options, Parser, Tag};
+use pulldown_cmark_to_cmark::cmark_with_options;
+use rayon::prelude::*;
+use slug::slugify;
+use snafu::{ResultExt, Snafu};
+use unicode_normalization::UnicodeNormalization;
+
+pub use context::Context;
+pub use frontmatter::{Frontmatter, FrontmatterStrategy};
+use frontmatter::{frontmatter_from_str, frontmatter_to_str};
+use references::*;
+pub use walker::{vault_contents, WalkOptions};
 
 mod context;
 mod frontmatter;
 pub mod postprocessors;
 mod references;
 mod walker;
-
-pub use context::Context;
-pub use frontmatter::{Frontmatter, FrontmatterStrategy};
-pub use walker::{vault_contents, WalkOptions};
-
-use frontmatter::{frontmatter_from_str, frontmatter_to_str};
-use pathdiff::diff_paths;
-use percent_encoding::{utf8_percent_encode, AsciiSet, CONTROLS};
-use pulldown_cmark::{CodeBlockKind, CowStr, Event, HeadingLevel, Options, Parser, Tag};
-use pulldown_cmark_to_cmark::cmark_with_options;
-use rayon::prelude::*;
-use references::*;
-use slug::slugify;
-use snafu::{ResultExt, Snafu};
-use std::ffi::OsString;
-use std::fmt;
-use std::fs::{self, File};
-use std::io::prelude::*;
-use std::io::ErrorKind;
-use std::path::{Path, PathBuf};
-use std::str;
-use unicode_normalization::UnicodeNormalization;
 
 /// A series of markdown [Event]s that are generated while traversing an Obsidian markdown note.
 pub type MarkdownEvents<'a> = Vec<Event<'a>>;
@@ -134,7 +134,7 @@ pub type MarkdownEvents<'a> = Vec<Event<'a>>;
 /// ```
 
 pub type Postprocessor<'f> =
-    dyn Fn(&mut Context, &mut MarkdownEvents) -> PostprocessorResult + Send + Sync + 'f;
+dyn Fn(&mut Context, &mut MarkdownEvents) -> PostprocessorResult + Send + Sync + 'f;
 type Result<T, E = ExportError> = std::result::Result<T, E>;
 
 const PERCENTENCODE_CHARS: &AsciiSet = &CONTROLS.add(b' ').add(b'(').add(b')').add(b'%').add(b'?');
@@ -392,7 +392,7 @@ impl<'a> Exporter<'a> {
             true => self.parse_and_export_obsidian_note(src, dest),
             false => copy_file(src, dest),
         }
-        .context(FileExportSnafu { path: src })
+            .context(FileExportSnafu { path: src })
     }
 
     fn parse_and_export_obsidian_note(&self, src: &Path, dest: &Path) -> Result<()> {
@@ -477,7 +477,7 @@ impl<'a> Exporter<'a> {
                         _ => {
                             events.push(event);
                             buffer.clear();
-                        },
+                        }
                     };
                 }
                 RefParserState::ExpectSecondOpenBracket => match event {
@@ -527,7 +527,7 @@ impl<'a> Exporter<'a> {
                         Some(RefType::Embed) => {
                             let mut elements = self.embed_file(
                                 ref_parser.ref_text.clone().as_ref(),
-                                context
+                                context,
                             )?;
                             events.append(&mut elements);
                             buffer.clear();
@@ -593,7 +593,7 @@ impl<'a> Exporter<'a> {
                 vec![Event::Text(CowStr::Borrowed("→ "))],
                 self.make_link_to_file(note_ref, &child_context),
             ]
-            .concat());
+                .concat());
         }
 
         let events = match path.extension().unwrap_or(&no_ext).to_str() {
@@ -683,7 +683,7 @@ impl<'a> Exporter<'a> {
                 .parent()
                 .expect("obsidian content files should always have a parent"),
         )
-        .expect("should be able to build relative path when target file is found in vault");
+            .expect("should be able to build relative path when target file is found in vault");
 
         let rel_link = rel_link.to_string_lossy();
         let mut link = utf8_percent_encode(&rel_link, PERCENTENCODE_CHARS).to_string();
@@ -744,7 +744,7 @@ fn render_mdevents_to_mdtext(markdown: MarkdownEvents) -> String {
         &mut buffer,
         pulldown_cmark_to_cmark::Options::default(),
     )
-    .expect("formatting to string not expected to fail");
+        .expect("formatting to string not expected to fail");
     buffer.push('\n');
     buffer
 }
@@ -891,9 +891,10 @@ fn codeblock_kind_to_owned<'a>(codeblock_kind: CodeBlockKind) -> CodeBlockKind<'
 
 #[cfg(test)]
 mod tests {
-    use super::*;
     use pretty_assertions::assert_eq;
     use rstest::rstest;
+
+    use super::*;
 
     lazy_static! {
         static ref VAULT: Vec<std::path::PathBuf> = vec![

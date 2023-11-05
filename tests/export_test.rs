@@ -1,13 +1,13 @@
-use obsidian_export::{ExportError, Exporter, FrontmatterStrategy};
-use pretty_assertions::assert_eq;
 use std::fs::read_to_string;
-
+#[cfg(not(target_os = "windows"))]
+use std::os::unix::fs::PermissionsExt;
 use std::path::PathBuf;
+
+use pretty_assertions::assert_eq;
 use tempfile::TempDir;
 use walkdir::WalkDir;
 
-#[cfg(not(target_os = "windows"))]
-use std::os::unix::fs::PermissionsExt;
+use obsidian_export::{Exporter, ExportError, FrontmatterStrategy};
 
 #[test]
 fn test_main_variants_with_default_options() {
@@ -17,8 +17,8 @@ fn test_main_variants_with_default_options() {
         PathBuf::from("tests/test_data/input/main-samples/"),
         tmp_dir.path().to_path_buf(),
     )
-    .run()
-    .expect("exporter returned error");
+        .run()
+        .expect("exporter returned error");
 
     let walker = WalkDir::new("tests/test_data/expected/main-samples/")
         // Without sorting here, different test runs may trigger the first assertion failure in
@@ -64,7 +64,7 @@ fn test_frontmatter_never() {
             .path()
             .join(PathBuf::from("note-with-frontmatter.md")),
     )
-    .unwrap();
+        .unwrap();
 
     assert_eq!(expected, actual);
 }
@@ -86,7 +86,7 @@ fn test_frontmatter_always() {
             .path()
             .join(PathBuf::from("note-without-frontmatter.md")),
     )
-    .unwrap();
+        .unwrap();
     assert_eq!(expected, actual);
 
     // Note with frontmatter should remain untouched.
@@ -96,7 +96,7 @@ fn test_frontmatter_always() {
             .path()
             .join(PathBuf::from("note-with-frontmatter.md")),
     )
-    .unwrap();
+        .unwrap();
     assert_eq!(expected, actual);
 }
 
@@ -108,12 +108,10 @@ fn test_exclude() {
         PathBuf::from("tests/test_data/input/main-samples/"),
         tmp_dir.path().to_path_buf(),
     )
-    .run()
-    .expect("exporter returned error");
+        .run()
+        .expect("exporter returned error");
 
-    let excluded_note = tmp_dir
-        .path()
-        .join(PathBuf::from("excluded-note.md"));
+    let excluded_note = tmp_dir.path().join(PathBuf::from("excluded-note.md"));
     assert!(
         !excluded_note.exists(),
         "exluded-note.md was found in tmpdir, but should be absent due to .export-ignore rules"
@@ -127,8 +125,8 @@ fn test_single_file_to_dir() {
         PathBuf::from("tests/test_data/input/single-file/note.md"),
         tmp_dir.path().to_path_buf(),
     )
-    .run()
-    .unwrap();
+        .run()
+        .unwrap();
 
     assert_eq!(
         read_to_string("tests/test_data/expected/single-file/note.md").unwrap(),
@@ -145,8 +143,8 @@ fn test_single_file_to_file() {
         PathBuf::from("tests/test_data/input/single-file/note.md"),
         dest.clone(),
     )
-    .run()
-    .unwrap();
+        .run()
+        .unwrap();
 
     assert_eq!(
         read_to_string("tests/test_data/expected/single-file/note.md").unwrap(),
@@ -224,7 +222,7 @@ fn test_start_at_file_within_subdir_destination_is_file() {
     } else {
         read_to_string("tests/test_data/expected/start-at/single-file/Note B.md").unwrap()
     };
-    assert_eq!(expected, read_to_string(dest).unwrap(),);
+    assert_eq!(expected, read_to_string(dest).unwrap(), );
 }
 
 #[test]
@@ -235,8 +233,8 @@ fn test_not_existing_source() {
         PathBuf::from("tests/test_data/no-such-file.md"),
         tmp_dir.path().to_path_buf(),
     )
-    .run()
-    .unwrap_err();
+        .run()
+        .unwrap_err();
 
     match err {
         ExportError::PathDoesNotExist { path: _ } => {}
@@ -252,8 +250,8 @@ fn test_not_existing_destination_with_source_dir() {
         PathBuf::from("tests/test_data/input/main-samples/"),
         tmp_dir.path().to_path_buf().join("does-not-exist"),
     )
-    .run()
-    .unwrap_err();
+        .run()
+        .unwrap_err();
 
     match err {
         ExportError::PathDoesNotExist { path: _ } => {}
@@ -272,8 +270,8 @@ fn test_not_existing_destination_with_source_file() {
         PathBuf::from("tests/test_data/input/main-samples/obsidian-wikilinks.md"),
         tmp_dir.path().to_path_buf().join("subdir/does-not-exist"),
     )
-    .run()
-    .unwrap_err();
+        .run()
+        .unwrap_err();
 
     match err {
         ExportError::PathDoesNotExist { path: _ } => {}
@@ -331,8 +329,8 @@ fn test_infinite_recursion() {
         PathBuf::from("tests/test_data/input/infinite-recursion/"),
         tmp_dir.path().to_path_buf(),
     )
-    .run()
-    .unwrap_err();
+        .run()
+        .unwrap_err();
 
     match err {
         ExportError::FileExportError { path: _, source } => match *source {
@@ -368,8 +366,8 @@ fn test_non_ascii_filenames() {
         PathBuf::from("tests/test_data/input/non-ascii/"),
         tmp_dir.path().to_path_buf(),
     )
-    .run()
-    .expect("exporter returned error");
+        .run()
+        .expect("exporter returned error");
 
     let walker = WalkDir::new("tests/test_data/expected/non-ascii/")
         // Without sorting here, different test runs may trigger the first assertion failure in
@@ -406,8 +404,8 @@ fn test_same_filename_different_directories() {
         PathBuf::from("tests/test_data/input/same-filename-different-directories"),
         tmp_dir.path().to_path_buf(),
     )
-    .run()
-    .unwrap();
+        .run()
+        .unwrap();
 
     let expected = if cfg!(windows) {
         read_to_string("tests/test_data/expected/same-filename-different-directories/Note.md")
